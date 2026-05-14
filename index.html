@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Ma Galerie Photo Protégée</title>
+    <style>
+        /* Un peu de style basique pour que ce soit joli */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #222;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+        #password-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .password-form {
+            background: #333;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .password-form input {
+            padding: 10px;
+            margin: 10px 0;
+            width: 200px;
+            border-radius: 5px;
+            border: none;
+        }
+        .password-form button {
+            padding: 10px 20px;
+            background: #8A2BE2;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .password-form button:hover {
+            background: #FF69B4;
+        }
+        #password-error {
+            color: #FF4444;
+            margin-top: 10px;
+            display: none;
+        }
+        .gallery {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .gallery img {
+            width: 200px;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        #gallery-container {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Pop-up de mot de passe -->
+    <div id="password-container">
+        <div class="password-form">
+            <h2>🔒 Mot de passe requis</h2>
+            <p>Entrez le mot de passe pour voir les photos :</p>
+            <input type="password" id="password-input" placeholder="Mot de passe">
+            <button onclick="checkPassword()">Valider</button>
+            <p id="password-error">Je sais que tu ne l’as pas fait exprès. Tout le monde peut se tromper, et ça ne remet pas en cause la personne que tu es. L’important, c’est d’apprendre, d’avancer et de ne pas être trop dur avec toi-même. Prends soin de toi. 🌷</p>
+        </div>
+    </div>
+
+    <!-- Galerie (cachée par défaut) -->
+    <div id="gallery-container">
+        <h1>Ma Galerie Photo ✨</h1>
+        <div class="gallery">
+            <!-- Les images seront ajoutées ici -->
+            <img src="1.png" alt="Photo 1">
+            <img src="2.png" alt="Photo 2">
+            <img src="3.png" alt="Photo 3">
+            <img src="4.png" alt="Photo 4">
+            <img src="5.png" alt="Photo 5">
+        </div>
+    </div>
+
+    <script>
+        // Mot de passe (à changer !)
+        const PASSWORD = "viva yohanna";
+
+        function checkPassword() {
+            const inputPassword = document.getElementById('password-input').value;
+            const errorMessage = document.getElementById('password-error');
+
+            if (inputPassword === PASSWORD) {
+                // Masque la pop-up et affiche la galerie
+                document.getElementById('password-container').style.display = 'none';
+                document.getElementById('gallery-container').style.display = 'block';
+            } else {
+                // Affiche le message d'erreur
+                errorMessage.style.display = 'block';
+                // Réinitialise le champ de mot de passe
+                document.getElementById('password-input').value = '';
+            }
+        }
+    </script>
+</body>
+</html>
