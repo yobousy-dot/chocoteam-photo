@@ -3,158 +3,185 @@
 <head>
   <meta charset="UTF-8">
   <title>Ma Galerie Photo Protégée</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       min-height: 100vh;
-      display: flex; align-items: flex-start; justify-content: center;
+      display: flex; align-items: center; justify-content: center;
       background: linear-gradient(135deg, #0d0d1a 0%, #1a0a2e 40%, #0a1628 100%);
       font-family: 'DM Sans', sans-serif;
-      padding: 2rem 1rem;
+      overflow: hidden;
     }
-    .stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
-    .star { position: absolute; width: 2px; height: 2px; background: white; border-radius: 50%; animation: twinkle 3s infinite; opacity: 0; }
+    .stars {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    }
+    .star {
+      position: absolute; width: 2px; height: 2px;
+      background: white; border-radius: 50%;
+      animation: twinkle 3s infinite; opacity: 0;
+    }
     @keyframes twinkle { 0%,100%{opacity:0} 50%{opacity:0.6} }
-    .glow { position: fixed; inset: 0; pointer-events: none; z-index: 0;
-      background: radial-gradient(ellipse at 20% 50%, rgba(100,60,200,0.15) 0%, transparent 60%),
-                  radial-gradient(ellipse at 80% 20%, rgba(220,80,120,0.12) 0%, transparent 50%); }
-
-    /* --- ÉCRAN MOT DE PASSE --- */
-    #screen-lock {
-      position: fixed; inset: 0; z-index: 20;
-      display: flex; align-items: center; justify-content: center;
+    .glow {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background:
+        radial-gradient(ellipse at 20% 50%, rgba(100,60,200,0.15) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 20%, rgba(220,80,120,0.12) 0%, transparent 50%);
     }
-    .lock-card {
+
+    /* --- CARTE MOT DE PASSE --- */
+    #password-container {
+      position: fixed; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      z-index: 10;
+    }
+    .password-card {
       background: rgba(255,255,255,0.05);
       border: 1px solid rgba(255,255,255,0.12);
       backdrop-filter: blur(20px);
-      border-radius: 20px; padding: 2.5rem 2.2rem; width: 360px; z-index: 1;
+      border-radius: 20px;
+      padding: 2.5rem 2.2rem;
+      width: 360px;
+      position: relative; z-index: 1;
     }
-    .lock-icon { width: 56px; height: 56px; margin: 0 auto 1.2rem;
+    .lock-icon {
+      width: 56px; height: 56px;
+      margin: 0 auto 1.2rem;
       background: linear-gradient(135deg, #7c3aed, #db2777);
-      border-radius: 14px; display: flex; align-items: center; justify-content: center;
-      font-size: 24px; box-shadow: 0 8px 24px rgba(124,58,237,0.4); }
-    .lock-card h2 { font-family: 'Playfair Display', serif; font-size: 22px; color: #f5f0ff; text-align: center; margin-bottom: 0.3rem; }
-    .lock-card .sub { font-size: 13px; color: rgba(200,185,255,0.6); text-align: center; margin-bottom: 1.8rem; }
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px;
+      box-shadow: 0 8px 24px rgba(124,58,237,0.4);
+    }
+    .password-card h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px; font-weight: 700;
+      color: #f5f0ff; text-align: center; margin-bottom: 0.3rem;
+    }
+    .password-card p.sub {
+      font-size: 13px; color: rgba(200,185,255,0.6);
+      text-align: center; margin-bottom: 1.8rem; letter-spacing: 0.5px;
+    }
     .input-wrap { position: relative; margin-bottom: 1rem; }
     .input-wrap input {
-      width: 100%; background: rgba(255,255,255,0.07);
-      border: 1px solid rgba(255,255,255,0.15); border-radius: 12px;
-      padding: 13px 14px; font-size: 15px; color: #f0ebff; outline: none;
-      font-family: 'DM Sans', sans-serif;
+      width: 100%;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 12px;
+      padding: 13px 14px 13px 44px;
+      font-size: 15px; color: #f0ebff;
+      outline: none;
       transition: border-color 0.2s, box-shadow 0.2s;
+      font-family: 'DM Sans', sans-serif;
     }
     .input-wrap input::placeholder { color: rgba(200,185,255,0.35); }
-    .input-wrap input:focus { border-color: rgba(167,139,250,0.6); box-shadow: 0 0 0 3px rgba(124,58,237,0.18); }
-    .input-wrap input.error { border-color: rgba(244,63,94,0.6); animation: shake 0.35s ease; }
-    @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
-    .btn-main { width: 100%; padding: 14px;
-      background: linear-gradient(135deg, #7c3aed 0%, #db2777 100%);
-      border: none; border-radius: 12px; font-size: 15px; font-weight: 500; color: white;
-      cursor: pointer; font-family: 'DM Sans', sans-serif;
-      box-shadow: 0 4px 20px rgba(124,58,237,0.35);
-      transition: opacity 0.2s, transform 0.15s; }
-    .btn-main:hover { opacity: 0.92; transform: translateY(-1px); }
-    #lock-error { font-size: 13px; color: rgba(255,160,180,0.9); text-align: center; margin-top: 1rem;
-      padding: 10px 14px; background: rgba(244,63,94,0.1);
-      border: 1px solid rgba(244,63,94,0.2); border-radius: 10px; display: none; line-height: 1.5; }
-
-    /* --- GALERIE PRINCIPALE --- */
-    #screen-gallery { display: none; position: relative; z-index: 1; width: 100%; max-width: 760px; }
-    .gallery-header { text-align: center; margin-bottom: 2rem; }
-    .gallery-header h1 { font-family: 'Playfair Display', serif; font-size: 32px; color: #f5f0ff; margin-bottom: 0.3rem; }
-    .gallery-header p { font-size: 12px; color: rgba(200,185,255,0.4); letter-spacing: 1px; text-transform: uppercase; }
-
-    /* Barre d'ajout */
-    .add-section {
-      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 16px; padding: 1.2rem 1.4rem; margin-bottom: 1.5rem;
+    .input-wrap input:focus {
+      border-color: rgba(167,139,250,0.6);
+      box-shadow: 0 0 0 3px rgba(124,58,237,0.18);
     }
-    .add-section label { font-size: 12px; color: rgba(200,185,255,0.5); letter-spacing: 0.5px; display: block; margin-bottom: 0.7rem; }
-    .add-bar { display: flex; gap: 8px; }
-    .add-bar input {
-      flex: 1; background: rgba(255,255,255,0.07);
-      border: 1px solid rgba(255,255,255,0.15); border-radius: 10px;
-      padding: 11px 14px; font-size: 14px; color: #f0ebff; outline: none;
+    .input-wrap input.error {
+      border-color: rgba(244,63,94,0.6);
+      animation: shake 0.35s ease;
+    }
+    .input-icon {
+      position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+      font-size: 18px; color: rgba(200,185,255,0.4); pointer-events: none;
+    }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+    .btn-submit {
+      width: 100%; padding: 14px;
+      background: linear-gradient(135deg, #7c3aed 0%, #db2777 100%);
+      border: none; border-radius: 12px;
+      font-size: 15px; font-weight: 500; color: white;
+      cursor: pointer; letter-spacing: 0.3px;
+      transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+      box-shadow: 0 4px 20px rgba(124,58,237,0.35);
       font-family: 'DM Sans', sans-serif;
     }
-    .add-bar input::placeholder { color: rgba(200,185,255,0.3); }
-    .add-bar input:focus { border-color: rgba(167,139,250,0.5); }
-    .btn-add { padding: 11px 18px;
-      background: linear-gradient(135deg, #7c3aed, #db2777);
-      border: none; border-radius: 10px; color: white; font-size: 14px;
-      font-weight: 500; cursor: pointer; white-space: nowrap; font-family: 'DM Sans', sans-serif; }
-    .btn-add:hover { opacity: 0.88; }
-    #add-error { font-size: 12px; color: rgba(255,130,150,0.8); margin-top: 0.5rem; display: none; }
+    .btn-submit:hover { opacity: 0.92; transform: translateY(-1px); box-shadow: 0 8px 28px rgba(124,58,237,0.45); }
+    .btn-submit:active { transform: translateY(0); }
+    #password-error {
+      font-size: 13px; color: rgba(255,160,180,0.9);
+      text-align: center; margin-top: 1rem; line-height: 1.5;
+      padding: 10px 14px;
+      background: rgba(244,63,94,0.1);
+      border: 1px solid rgba(244,63,94,0.2);
+      border-radius: 10px; display: none;
+    }
 
-    /* Grille photos */
-    .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
-    .gallery-item { aspect-ratio: 1; border-radius: 14px; overflow: hidden; position: relative;
-      border: 1px solid rgba(255,255,255,0.1); transition: transform 0.3s; }
-    .gallery-item:hover { transform: scale(1.03); }
-    .gallery-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .item-del { position: absolute; top: 7px; right: 7px;
-      background: rgba(0,0,0,0.6); border: none; border-radius: 7px;
-      width: 28px; height: 28px; color: #ffb3c1; font-size: 16px;
-      cursor: pointer; opacity: 0; transition: opacity 0.2s;
-      display: flex; align-items: center; justify-content: center; }
-    .gallery-item:hover .item-del { opacity: 1; }
-    .gallery-empty { text-align: center; padding: 3rem; color: rgba(200,185,255,0.3); font-size: 14px; grid-column: 1/-1; }
-    .photo-count { font-size: 12px; color: rgba(200,185,255,0.4); margin-bottom: 0.8rem; }
+    /* --- GALERIE --- */
+    #gallery-container {
+      display: none; position: relative; z-index: 1;
+      padding: 2.5rem 2rem; width: 100%; max-width: 720px;
+    }
+    #gallery-container h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 32px; color: #f5f0ff; text-align: center; margin-bottom: 0.4rem;
+    }
+    .gallery-sub {
+      font-size: 13px; color: rgba(200,185,255,0.5);
+      text-align: center; margin-bottom: 2rem;
+      letter-spacing: 1px; text-transform: uppercase;
+    }
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 12px;
+    }
+    .gallery-item {
+      aspect-ratio: 1; border-radius: 14px; overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.1);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .gallery-item:hover {
+      transform: scale(1.03);
+      box-shadow: 0 12px 36px rgba(0,0,0,0.5);
+    }
+    .gallery-item img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+    }
   </style>
 </head>
 <body>
   <div class="stars" id="stars"></div>
   <div class="glow"></div>
 
-  <!-- ÉCRAN MOT DE PASSE -->
-  <div id="screen-lock">
-    <div class="lock-card">
+  <div id="password-container">
+    <div class="password-card">
       <div class="lock-icon">🔒</div>
       <h2>Galerie privée</h2>
       <p class="sub">Entrez le mot de passe pour continuer</p>
       <div class="input-wrap">
-        <input type="password" id="pw-input" placeholder="Mot de passe…"
+        <span class="input-icon">🗝️</span>
+        <input type="password" id="password-input" placeholder="Mot de passe..."
           onkeydown="if(event.key==='Enter') checkPassword()">
       </div>
-      <button class="btn-main" onclick="checkPassword()">Accéder à la galerie →</button>
-      <div id="lock-error">Je sais que tu ne l'as pas fait exprès. L'important, c'est d'avancer et de ne pas être trop dur avec toi-même. 🌷</div>
+      <button class="btn-submit" onclick="checkPassword()">Accéder à la galerie →</button>
+      <p id="password-error">Je sais que tu ne l'as pas fait exprès. Tout le monde peut se tromper — l'important, c'est d'avancer et de ne pas être trop dur avec toi-même. 🌷</p>
     </div>
   </div>
 
-  <!-- GALERIE -->
-  <div id="screen-gallery">
-    <div class="gallery-header">
-      <h1>Ma galerie ✨</h1>
-      <p>Collection personnelle</p>
-    </div>
-
-    <!-- Zone d'ajout -->
-    <div class="add-section">
-      <label>➕ Ajouter une photo via URL</label>
-      <div class="add-bar">
-        <input type="text" id="url-input" placeholder="Colle une URL d'image ici… (https://...)"
-          onkeydown="if(event.key==='Enter') addPhoto()">
-        <button class="btn-add" onclick="addPhoto()">Ajouter</button>
-      </div>
-      <div id="add-error">URL invalide ou image non accessible.</div>
-    </div>
-
-    <div class="photo-count" id="photo-count">0 photo</div>
-    <div class="gallery-grid" id="gallery-grid">
-      <div class="gallery-empty">Aucune photo pour l'instant — collez une URL ci-dessus !</div>
+  <div id="gallery-container">
+    <h1>Ma galerie ✨</h1>
+    <p class="gallery-sub">Collection personnelle</p>
+    <div class="gallery">
+      <div class="gallery-item"><img src="1.png" alt="Photo 1"></div>
+      <div class="gallery-item"><img src="2.png" alt="Photo 2"></div>
+      <div class="gallery-item"><img src="3.png" alt="Photo 3"></div>
+      <div class="gallery-item"><img src="4.png" alt="Photo 4"></div>
+      <div class="gallery-item"><img src="5.png" alt="Photo 5"></div>
     </div>
   </div>
 
   <script>
     const PASSWORD = "viva yohanna";
-    const STORAGE_KEY = "gallery_photos";
 
-    // Étoiles
+    // Étoiles animées
     const starsEl = document.getElementById('stars');
     for (let i = 0; i < 60; i++) {
-      const s = document.createElement('div'); s.className = 'star';
+      const s = document.createElement('div');
+      s.className = 'star';
       s.style.left = Math.random() * 100 + '%';
       s.style.top = Math.random() * 100 + '%';
       s.style.animationDelay = Math.random() * 4 + 's';
@@ -162,67 +189,18 @@
       starsEl.appendChild(s);
     }
 
-    // Mot de passe
     function checkPassword() {
-      const input = document.getElementById('pw-input');
-      const error = document.getElementById('lock-error');
+      const input = document.getElementById('password-input');
+      const error = document.getElementById('password-error');
       if (input.value === PASSWORD) {
-        document.getElementById('screen-lock').style.display = 'none';
-        document.getElementById('screen-gallery').style.display = 'block';
-        renderGallery();
+        document.getElementById('password-container').style.display = 'none';
+        document.getElementById('gallery-container').style.display = 'block';
       } else {
         error.style.display = 'block';
         input.classList.add('error');
         input.value = '';
         setTimeout(() => input.classList.remove('error'), 400);
       }
-    }
-
-    // Photos stockées dans localStorage
-    function getPhotos() {
-      return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-    }
-    function savePhotos(photos) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(photos));
-    }
-
-    function addPhoto() {
-      const input = document.getElementById('url-input');
-      const err = document.getElementById('add-error');
-      const url = input.value.trim();
-      if (!url || !url.startsWith('http')) {
-        err.style.display = 'block'; return;
-      }
-      err.style.display = 'none';
-      const photos = getPhotos();
-      photos.push(url);
-      savePhotos(photos);
-      input.value = '';
-      renderGallery();
-    }
-
-    function removePhoto(index) {
-      const photos = getPhotos();
-      photos.splice(index, 1);
-      savePhotos(photos);
-      renderGallery();
-    }
-
-    function renderGallery() {
-      const photos = getPhotos();
-      const grid = document.getElementById('gallery-grid');
-      const count = document.getElementById('photo-count');
-      count.textContent = photos.length + ' photo' + (photos.length > 1 ? 's' : '');
-      if (photos.length === 0) {
-        grid.innerHTML = '<div class="gallery-empty">Aucune photo pour l\'instant — collez une URL ci-dessus !</div>';
-        return;
-      }
-      grid.innerHTML = photos.map((url, i) => `
-        <div class="gallery-item">
-          <img src="${url}" alt="Photo ${i+1}" onerror="this.style.opacity='0.2'">
-          <button class="item-del" onclick="removePhoto(${i})" aria-label="Supprimer">✕</button>
-        </div>
-      `).join('');
     }
   </script>
 </body>
